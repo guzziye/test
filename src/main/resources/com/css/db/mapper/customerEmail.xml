@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerEmail">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerEmailVo">
+		<id column="CUST_EMAIL_ID" property="custEmailId" jdbcType="DECIMAL" />
+		<id column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<id column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="TYPE_CDE" property="typeCde" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		CUST_EMAIL_ID, CUST_ID, EMAIL, TYPE_CDE
+	</sql>
+	
+	<select id="getCustomerEmailByPK" resultMap="BaseResultMap" parameterType="com.css.crm.vo.CustomerEmailVo">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_EMAIL
+		where
+			CUST_EMAIL_ID = #{custEmailId,jdbcType=DECIMAL}
+	</select>
+	
+	<select id="getCustomerEmailByCustId" resultMap="BaseResultMap" parameterType="com.css.crm.vo.CustomerEmailVo">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_EMAIL
+		where
+			CUST_ID = #{custId,jdbcType=VARCHAR}
+		order by cust_email_id asc	
+	</select>
+	
+	<insert id="insertCustomerEmail" parameterType="com.css.crm.vo.CustomerEmailVo">
+		<selectKey resultType="long" keyProperty="custEmailId" order="BEFORE">
+			SELECT
+		      SQ_VP_CUST_EMAIL.NEXTVAL
+		    FROM
+		      DUAL
+		</selectKey>
+		insert into VP_CUST_EMAIL
+			(CUST_EMAIL_ID, CUST_ID, EMAIL, TYPE_CDE)
+		values (
+			#{custEmailId,jdbcType=DECIMAL},
+			#{custId,jdbcType=VARCHAR},
+			trim(#{email,jdbcType=VARCHAR}),
+			#{typeCde,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateCustomerEmailByPK" parameterType="com.css.crm.vo.CustomerEmailVo">
+		update
+			VP_CUST_EMAIL
+		set
+			TYPE_CDE = #{typeCde,jdbcType=VARCHAR},
+			EMAIL= trim(#{email,jdbcType=VARCHAR})
+		where
+			CUST_EMAIL_ID = #{custEmailId,jdbcType=DECIMAL}
+	</update>
+	
+	<delete id="deleteCustomerEmailByPK" parameterType="java.lang.Long">
+		delete from
+			VP_CUST_EMAIL
+		where
+			CUST_EMAIL_ID = #{custEmailId,jdbcType=DECIMAL}
+	</delete>
+
+	<delete id="deleteCustomerEmailByCustId" parameterType="com.css.crm.vo.CustomerEmailVo">
+		delete from
+			VP_CUST_EMAIL
+		where
+			CUST_ID = #{custId,jdbcType=VARCHAR}
+	</delete>
+	
+</mapper>

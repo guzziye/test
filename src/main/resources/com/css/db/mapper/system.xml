@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="system"> 
+	<resultMap type="com.css.crm.vo.SystemMenuVo" id="getSystemMenuResult">
+		<result property="applId" column="applId" />
+		<result property="applDispName" column="applDispName" />
+		<result property="applUrl" column="applUrl" />
+		<result property="applSeq" column="applSeq" />
+	</resultMap>
+	<select id="getSystemMenu" resultMap="getSystemMenuResult">
+		SELECT
+			appl_id applId,
+			disp_nam applDispName,
+			dm || uri applUrl,
+			seq applSeq
+		FROM
+			sm_appl
+		WHERE
+			disp_nam IS NOT NULL AND
+			dm IS NOT NULL AND
+			uri IS NOT NULL
+		ORDER BY
+			seq
+	</select>
+
+	<resultMap id="getCrmMenuFuncList" type="com.css.crm.vo.MenuFuncVo">
+		<result property="funcId" column="funcId" />
+		<result property="funcName" column="funcName" />
+		<result property="funcUrl" column="funcUrl" />
+		<result property="parentId" column="menuId" />
+	</resultMap>
+	<resultMap id="getCrmMenuItemList" type="com.css.crm.vo.MenuItemVo">
+		<result property="menuId" column="menuId" />
+		<result property="menuName" column="menuName" />
+		<result property="menuSeq" column="menuSeq" />
+		<result property="url" column="url" />
+		<result property="imageUrl" column="imageUrl" />
+		<result property="parentId" column="mugpId" />
+		<collection property="menuFuncList" resultMap="system.getCrmMenuFuncList"></collection>
+	</resultMap>
+	<resultMap id="getCrmMenuGroupList" type="com.css.crm.vo.MenuGroupVo">
+		<result property="mugpId" column="mugpId" />
+		<result property="groupName" column="groupName" />
+		<result property="groupSeq" column="groupSeq" />
+		<collection property="menuItemList" resultMap="system.getCrmMenuItemList"></collection>
+	</resultMap>
+	<resultMap id="getCrmMenuMapResult" type="com.css.crm.vo.MenuMapVo">
+		<result property="applId" column="applId" />
+		<result property="applDispName" column="applDispName" />
+		<result property="rtmuId" column="rtmuId" />
+		<result property="rootName" column="rootName" />
+		<result property="rootUrl" column="rootUrl" />
+		<collection property="menuGroupList" resultMap="system.getCrmMenuGroupList"></collection>
+	</resultMap>
+	<select id="getCrmMenuMap" resultMap="getCrmMenuMapResult">
+		SELECT
+			a.appl_id applId,
+			(SELECT disp_nam FROM sm_appl WHERE appl_id = a.appl_id) applDispName,
+			a.obj_id rtmuId,
+			b.obj_id mugpId,
+			c.obj_id menuId,
+			d.obj_id funcId,
+			a.obj_desc rootName,
+			b.obj_desc groupName,
+			c.obj_desc menuName,
+			d.obj_desc funcName,
+			a.dm || a.uri rootUrl,
+			c.dm || c.uri url,
+			c.dm ||
+			c.img imageUrl,
+			d.dm || d.uri funcUrl,
+			b.seq groupSeq,
+			c.seq menuSeq
+		FROM 
+			sm_obj a,
+			sm_obj b, 
+			sm_obj c,
+			sm_obj d
+		WHERE
+		 	a.appl_id = 'CRM1' AND
+			a.obj_type = 'RTMU' AND
+			a.obj_id = b.parnt_obj_id AND
+			b.obj_id = c.parnt_obj_id AND
+			c.obj_id = d.parnt_obj_id 
+		ORDER BY
+			b.obj_id,
+			c.obj_id,
+			d.obj_id
+	</select>
+
+	<resultMap id="getApplAccountResult" type="com.css.crm.vo.UserVo">
+		<result property="id" column="id" />
+		<result property="employeeNumber" column="employeeNumber" />
+		<result property="chineseName" column="chineseName" />
+		<result property="englishName" column="englishName" />
+		<result property="stateCode" column="stateCode" />
+		<result property="departmentCode" column="departmentCode" />
+		<result property="department" column="department" />
+		<result property="companyCode" column="companyCode" />
+	</resultMap>
+	<select id="getApplAccount" parameterType="java.util.HashMap" resultMap="getApplAccountResult">
+		SELECT
+			acct.acct_id id,
+			ldap.empl_nbr employeeNumber,
+			empl.empl_nam_c chineseName,
+			empl.empl_nam englishName,
+			empl.stat_cde stateCode,
+			dept.dept_cde departmentCode,
+			dept.dept_short_nam department,
+			dept.co_cde companyCode
+		FROM
+			sm_ldap ldap,
+			sm_appl_acct_map acct,
+			sm_appl appl,
+			ps_empl empl,
+			im_dept dept
+		WHERE
+			ldap.ldap_id = Upper(#{ldapId, jdbcType=VARCHAR}) AND
+			acct.appl_id = Upper(#{applId, jdbcType=VARCHAR}) AND
+			ldap.ldap_id = acct.ldap_id AND
+			ldap.empl_nbr = empl.empl_nbr AND
+			acct.appl_id = appl.appl_id AND
+			dept.dept_cde = empl.dept_cde
+	</select>
+
+	<resultMap id="getAllObjectPermissionResult" type="com.css.crm.vo.ObjectPermissionVo">
+		<result property="objectId" column="objectId" />
+		<result property="parentObjectId" column="parentObjectId" />
+		<result property="type" column="type" />
+		<result property="description" column="description" />
+		<result property="permission" column="permission" />
+		<result property="uri" column="uri" />
+	</resultMap>
+	<select id="getAllObjectPermission" parameterType="java.util.HashMap" resultMap="getAllObjectPermissionResult">
+		SELECT DISTINCT
+			obj_id objectId,
+			(SELECT parnt_obj_id FROM sm_obj WHERE obj_id = a.obj_id) parentObjectId,
+			obj_type type,
+			obj_desc description,
+			op permission,
+			uri uri
+		FROM
+			vw_sm_acct_obj a
+		WHERE
+			acct_id = Upper(#{accountId}) AND
+			appl_id = Upper(#{applId})
+		ORDER BY
+			parentObjectId,
+			objectId
+	</select>
+
+	<select id="getAccountUnits" parameterType="java.util.HashMap" resultType="String">
+		SELECT DISTINCT
+			empl_cntxt_inst_value unit_cde
+		FROM
+			vw_sm_acct_obj
+		WHERE
+			acct_id = Upper(#{accountId}) AND
+			appl_id = Upper(#{applId}) AND
+			empl_cntxt_type = 'UNIT'
+	</select>
+
+	<select id="getAccountSingleUnit" parameterType="java.util.HashMap" resultType="String">
+		SELECT
+		pk_sm_acct_flib.f_acct_singl_unit_cde_new(UPPER(#{accountId}),
+		#{applId}) FROM DUAL
+	</select>
+
+	<select id="getAccountDefaultUnit" parameterType="java.util.HashMap" resultType="String">
+		SELECT
+		pk_sm_acct_flib.f_get_acct_deflt_unit_cde(UPPER(#{accountId}),
+		#{applId}) FROM DUAL
+	</select>
+
+	<select id="getOrigCtryCde" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		decode(f_get_dept_regn(#{deptCde, mode=IN,
+		jdbcType=VARCHAR}),
+		'CN', 396, 'HK', 397, 'MC', 398, 'TW', 399, 400)
+		orig_ctry_code
+		from dual
+	</select>
+
+
+	<resultMap id="DepartmentVo" type="com.css.crm.vo.DepartmentVo">
+		<id column="DEPT_CDE" jdbcType="VARCHAR" property="deptCde" />
+		<result column="DEPT_SHORT_NAM" jdbcType="VARCHAR" property="deptShortNam" />
+		<result column="CO_CDE" jdbcType="VARCHAR" property="coCde" />
+		<result column="BDGT" jdbcType="DECIMAL" property="bdgt" />
+		<result column="DEPT_TYPE" jdbcType="VARCHAR" property="deptType" />
+		<result column="DEPT_FULL_NAM_1" jdbcType="VARCHAR" property="deptFullNam1" />
+		<result column="DEPT_FULL_NAM_2" jdbcType="VARCHAR" property="deptFullNam2" />
+		<result column="DEPT_FULL_NAM_1_ZHS" jdbcType="VARCHAR" property="deptFullNam1Zhs" />
+		<result column="DEPT_FULL_NAM_2_ZHS" jdbcType="VARCHAR" property="deptFullNam2Zhs" />
+		<result column="DEPT_SHORT_NAM_ZHS" jdbcType="VARCHAR" property="deptShortNamZhs" />
+		<result column="ADDR_LINE_1" jdbcType="VARCHAR" property="addrLine1" />
+		<result column="ADDR_LINE_2" jdbcType="VARCHAR" property="addrLine2" />
+		<result column="BUS_HR_DESC" jdbcType="VARCHAR" property="busHrDesc" />
+		<result column="AUTO_SETL_IND" jdbcType="VARCHAR" property="autoSetlInd" />
+		<result column="INVNT_LOC_IND" jdbcType="VARCHAR" property="invntLocInd" />
+		<result column="ADDR_LINE_1_C" jdbcType="VARCHAR" property="addrLine1c" />
+		<result column="ADDR_LINE_2_C" jdbcType="VARCHAR" property="addrLine2c" />
+		<result column="STAT_CDE" jdbcType="VARCHAR" property="statCde" />
+		<result column="INVNT_TMP_LOC_IND" jdbcType="VARCHAR" property="invntTmpLocInd" />
+
+	</resultMap>
+	<sql id="Department_Column_List">
+		"DEPT_CDE" , "DEPT_SHORT_NAM" , "CO_CDE" , "BDGT" ,
+		"DEPT_TYPE" , "DEPT_FULL_NAM_1" , "DEPT_FULL_NAM_2" ,
+		"DEPT_FULL_NAM_1_ZHS" , "DEPT_FULL_NAM_2_ZHS" , "DEPT_SHORT_NAM_ZHS"
+		,"ADDR_LINE_1" ,"ADDR_LINE_2"
+		,"BUS_HR_DESC","AUTO_SETL_IND","INVNT_LOC_IND","ADDR_LINE_1_C","ADDR_LINE_2_C","STAT_CDE","INVNT_TMP_LOC_IND"
+	</sql>
+	<select id="getDepartment" parameterType="com.css.crm.vo.DepartmentVo" resultMap="DepartmentVo">
+		select
+		<include refid="Department_Column_List" />
+		from IM_DEPT
+		order by DEPT_CDE
+	</select>
+
+	<resultMap id="LdapResultMap" type="com.css.crm.vo.LdapVo">
+		<id column="LDAP_ID" jdbcType="VARCHAR" property="ldapId" />
+		<result column="EMPL_NBR" jdbcType="VARCHAR" property="emplNbr" />
+	</resultMap>
+	<sql id="Ldap_Column_List">
+		"LDAP_ID", "EMPL_NBR"
+	</sql>
+	<select id="getLdap" parameterType="com.css.crm.vo.LdapVo" resultMap="LdapResultMap">
+		select
+		<include refid="Ldap_Column_List" />
+		from SM_LDAP
+		order by empl_nbr
+	</select>
+
+	<resultMap id="DiscountResultMap" type="com.css.crm.vo.DiscountCodeVo">
+		<id column="DISC_CDE" jdbcType="VARCHAR" property="discCde" />
+		<result column="DISC_DESC" jdbcType="VARCHAR" property="discDesc" />
+		<result column="DISC_DESC_C" jdbcType="VARCHAR" property="discDescC" />
+	</resultMap>
+	<sql id="Discount_Column_List">
+		"DISC_CDE", "DISC_DESC", "DISC_DESC_C"
+	</sql>
+	<select id="getDiscountCode" parameterType="com.css.crm.vo.DiscountCodeVo" resultMap="DiscountResultMap">
+		select
+		<include refid="Discount_Column_List" />
+		from PS_DISC where DISC_DESC is not null
+		order by disc_cde
+	</select>
+
+	<resultMap id="StaticReferenceResultMap" type="com.css.crm.vo.StaticReferenceVo">
+		<id column="REF_TYPE" jdbcType="VARCHAR" property="refType" />
+		<result column="REF_CDE" jdbcType="VARCHAR" property="refCde" />
+		<result column="STATC_DESC" jdbcType="VARCHAR" property="statcDesc" />
+		<result column="STATC_DESC_C" jdbcType="VARCHAR" property="statcDescC" />
+		<result column="STATC_DESC_C_ZHS" jdbcType="VARCHAR" property="statcDescCZhs" />
+		<result column="STAT_CDE" jdbcType="VARCHAR" property="statCde" />
+	</resultMap>
+	<sql id="StaticReference_Column_List">
+		"REF_CDE", "STATC_DESC", "STATC_DESC_C", "STATC_DESC_C_ZHS"
+	</sql>
+	<select id="getStaticReference" parameterType="com.css.crm.vo.StaticReferenceVo" resultMap="StaticReferenceResultMap">
+		select
+		<include refid="StaticReference_Column_List" />
+		from IM_STATC_REF
+		where 1=1
+		<if test="refType!=null and refType.trim().length()>0">
+			and (REF_TYPE = #{refType,jdbcType=VARCHAR} or REF_CDE =
+			#{refCde,jdbcType=VARCHAR})
+		
+		</if>
+		 order by ref_cde
+	</select>
+
+	<resultMap id="PlaceResultMap" type="com.css.crm.vo.PlaceVo">
+		<id column="PLACE_ID" jdbcType="DECIMAL" property="placeId" />
+		<result column="PLACE_TYPE" jdbcType="VARCHAR" property="placeType" />
+		<result column="NAM_ZHT" jdbcType="VARCHAR" property="namZht" />
+		<result column="NAM_ZHS" jdbcType="VARCHAR" property="namZhs" />
+		<result column="NAM_PINYIN" jdbcType="VARCHAR" property="namPinyin" />
+		<result column="NAM_ENG" jdbcType="VARCHAR" property="namEng" />
+		<result column="POST_CDE" jdbcType="VARCHAR" property="postCde" />
+		<result column="AREA_CDE" jdbcType="VARCHAR" property="areaCde" />
+		<result column="PARNT_PLACE_ID" jdbcType="DECIMAL" property="parntPlaceId" />
+		<result column="STAT_CDE" jdbcType="VARCHAR" property="statCde" />
+		<result column="ADDR_ZHT" jdbcType="VARCHAR" property="addrZht" />
+		<result column="ADDR_ZHS" jdbcType="VARCHAR" property="addrZhs" />
+	</resultMap>
+	<sql id="Place_Column_List">
+		"PLACE_ID", "PLACE_TYPE", "NAM_ZHT", "NAM_ZHS",
+		"NAM_PINYIN", "NAM_ENG", "POST_CDE",
+		"AREA_CDE",
+		"PARNT_PLACE_ID",
+		"STAT_CDE", "ADDR_ZHT", "ADDR_ZHS"
+	</sql>
+	<select id="getPlace" parameterType="com.css.crm.vo.PlaceVo" resultMap="PlaceResultMap">
+		select
+		<include refid="Place_Column_List" />
+		from IM_PLACE
+		where 1=1
+
+		<if test="placeType!=null and placeType.trim().length()>0">
+			and PLACE_TYPE = #{placeType,jdbcType=VARCHAR}
+		</if>
+
+		<if test="parntPlaceId!=null">
+			and PARNT_PLACE_ID = #{parntPlaceId,jdbcType=DECIMAL}
+		</if>
+		order by NAM_ZHT
+	</select>
+</mapper>

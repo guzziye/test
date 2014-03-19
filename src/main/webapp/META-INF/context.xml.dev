@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/css_eshop" reloadable="true" privileged="true">
+	<Resource name="jdbc/crm1_db" 
+		auth="Container" 
+		type="javax.sql.DataSource" 
+		username="eshop"
+		password="eshop" 
+		driverClassName="oracle.jdbc.driver.OracleDriver" 
+		url="jdbc:oracle:thin:@192.168.1.98:1521:orcl"   
+		maxActive="8" 
+		maxIdle="2" />
+		
+		<!-- url="jdbc:oracle:thin:@192.168.1.98:1521:orcl"    -->
+		
+</Context>

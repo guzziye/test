@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="customerAuditTrail">
+	
+	<insert id="insertCustomerAuditTrail" parameterType="com.css.crm.vo.CustomerVo">
+		insert into VP_CUST_AT
+		(CUST_ID, TITLE, SEX, NAM_ENG, NAM_ZHT, NAM_ZHS, DOB, ORIG_CTRY_CDE,
+		REMARK1, REMARK2, MBR_CLASS, FR_CHANL, ACCT_NAM, PWD,
+		PREF_LANG,STAT_CDE, CRT_DEPT_CDE, CRT_DTE, JOIN_DEPT_CDE, JOIN_DTE,
+		ACTV_DTE, LAST_MOD_DTE, LAST_MOD_EMPL_NBR, BCKUP_DTE,BCKUP_EMPL_NBR,DML_CDE )
+		values (
+		#{custId,jdbcType=VARCHAR},
+		#{title,jdbcType=VARCHAR},
+		#{sex,jdbcType=VARCHAR},
+		trim(#{namEng,jdbcType=VARCHAR}),
+		trim(#{namZht,jdbcType=VARCHAR}),
+		trim(#{namZhs,jdbcType=VARCHAR}),
+		#{dob,jdbcType=DATE},
+		#{origCtryCde,jdbcType=DECIMAL},
+		trim(#{remark1,jdbcType=VARCHAR}),
+		trim(#{remark2,jdbcType=VARCHAR}),
+		#{mbrClass,jdbcType=VARCHAR},
+		#{frChanl,jdbcType=VARCHAR},
+		#{acctNam,jdbcType=VARCHAR},
+		#{pwd,jdbcType=VARCHAR},
+		#{prefLang,jdbcType=VARCHAR},
+		#{statCde,jdbcType=VARCHAR},
+		#{crtDeptCde,jdbcType=VARCHAR},
+		#{crtDte,jdbcType=DATE},
+		#{joinDeptCde,jdbcType=VARCHAR},
+		#{joinDte,jdbcType=DATE},
+		#{actvDte,jdbcType=DATE},
+		#{lastModDte,jdbcType=DATE},
+		#{lastModEmplNbr,jdbcType=VARCHAR},
+		sysdate,
+		#{bckupEmplNbr,jdbcType=VARCHAR},
+		#{dmlCde,jdbcType=VARCHAR})
+	</insert>
+	
+</mapper>

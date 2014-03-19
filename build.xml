@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="crm1" default="clean">
+
+	<fail unless="env">You must specify the env property when you run ant.</fail>
+
+	<property name="copyLocalPropFiles" value="Backup Local Properties Files" />
+	<property name="convertEncoding" value="Convert Properties File Encoding" />
+	<property name="overwriteOriginal" value="Update Properties File" />
+	<property name="maven.executable" value="mvn" />
+
+	<target name="copyLocalPropFiles">
+		<echo>${copyLocalPropFiles}</echo>
+		<move file="src/main/resources/com/css/crm/config/ldap.properties" tofile="src/main/resources/com/css/crm/config/ldap.properties.orig" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/config/solr.properties" tofile="src/main/resources/com/css/crm/config/solr.properties.orig" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/config/system.properties" tofile="src/main/resources/com/css/crm/config/system.properties.orig" overwrite="true" />		
+		<move file="src/main/webapp/META-INF/context.xml" tofile="src/main/webapp/META-INF/context.xml.orig" overwrite="true" />
+		<move file="src/main/webapp/WEB-INF/web.xml" tofile="src/main/webapp/WEB-INF/web.xml.orig" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_error_message.properties" tofile="src/main/resources/com/css/crm/properties/system_error_message.properties.orig" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties" tofile="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties.orig" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_info_message_zh_TW.properties" tofile="src/main/resources/com/css/crm/properties/system_info_message_zh_TW.properties.orig" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_label_zh_TW.properties" tofile="src/main/resources/com/css/crm/properties/system_label_zh_TW.properties.orig" overwrite="true" />
+	</target>
+	
+	<target name="convertEncoding">
+		<echo>${convertEncoding}</echo>
+		<native2ascii encoding="utf8" includes="*.properties.source" src="src/main/resources/com/css/crm/properties" dest="src/main/resources/com/css/crm/properties" ext=".tmp" />
+	</target>
+
+	<target name="overwriteOriginal">
+		<echo>${overwriteOriginal}</echo>
+		<echo>${env}</echo>		
+		<copy file="src/main/resources/com/css/crm/config/system.properties.${env}" tofile="src/main/resources/com/css/crm/config/system.properties" overwrite="true" />
+		<copy file="src/main/resources/com/css/crm/config/ldap.properties.${env}" tofile="src/main/resources/com/css/crm/config/ldap.properties" overwrite="true" />		
+		<copy file="src/main/resources/com/css/crm/config/solr.properties.${env}" tofile="src/main/resources/com/css/crm/config/solr.properties" overwrite="true" />
+		<copy file="src/main/webapp/META-INF/context.xml.${env}" tofile="src/main/webapp/META-INF/context.xml" overwrite="true" />
+		<copy file="src/main/webapp/WEB-INF/web.xml.${env}" tofile="src/main/webapp/WEB-INF/web.xml" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_error_message.properties.tmp" tofile="src/main/resources/com/css/crm/properties/system_error_message.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties.tmp" tofile="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties" overwrite="true" />
+		<replace file="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties" token="unspecific_date" value="${today}"/>
+		<replace file="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties" token="localhost" value="${env}"/>
+		<move file="src/main/resources/com/css/crm/properties/system_info_message_zh_TW.properties.tmp" tofile="src/main/resources/com/css/crm/properties/system_info_message_zh_TW.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_label_zh_TW.properties.tmp" tofile="src/main/resources/com/css/crm/properties/system_label_zh_TW.properties" overwrite="true" />
+	</target>		
+	
+	<target name="clean">		
+		<move file="src/main/resources/com/css/crm/config/system.properties.orig" tofile="src/main/resources/com/css/crm/config/system.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/config/ldap.properties.orig" tofile="src/main/resources/com/css/crm/config/ldap.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/config/solr.properties.orig" tofile="src/main/resources/com/css/crm/config/solr.properties" overwrite="true" />
+		<move file="src/main/webapp/META-INF/context.xml.orig" tofile="src/main/webapp/META-INF/context.xml" overwrite="true" />
+		<move file="src/main/webapp/WEB-INF/web.xml.orig" tofile="src/main/webapp/WEB-INF/web.xml" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_error_message.properties.orig" tofile="src/main/resources/com/css/crm/properties/system_error_message.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties.orig" tofile="src/main/resources/com/css/crm/properties/system_info_zh_TW.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_info_message_zh_TW.properties.orig" tofile="src/main/resources/com/css/crm/properties/system_info_message_zh_TW.properties" overwrite="true" />
+		<move file="src/main/resources/com/css/crm/properties/system_label_zh_TW.properties.orig" tofile="src/main/resources/com/css/crm/properties/system_label_zh_TW.properties" overwrite="true" />
+	</target>
+
+</project>

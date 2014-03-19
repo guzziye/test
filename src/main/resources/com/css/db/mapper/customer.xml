@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="customer">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerVo">
+		<id column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<result column="TITLE" property="title" jdbcType="VARCHAR" />
+		<result column="SEX" property="sex" jdbcType="VARCHAR" />
+		<result column="NAM_ENG" property="namEng" jdbcType="VARCHAR" />
+		<result column="NAM_ZHT" property="namZht" jdbcType="VARCHAR" />
+		<result column="NAM_ZHS" property="namZhs" jdbcType="VARCHAR" />
+		<result column="DOB" property="dob" jdbcType="DATE" />
+		<result column="ORIG_CTRY_CDE" property="origCtryCde" jdbcType="DECIMAL" />
+		<result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+		<result column="REMARK2" property="remark2" jdbcType="VARCHAR" />
+		<result column="MBR_CLASS" property="mbrClass" jdbcType="VARCHAR" />
+		<result column="FR_CHANL" property="frChanl" jdbcType="VARCHAR" />
+		<result column="ACCT_NAM" property="acctNam" jdbcType="VARCHAR" />
+		<result column="PWD" property="pwd" jdbcType="VARCHAR" />
+		<result column="PREF_LANG" property="prefLang" jdbcType="VARCHAR" />
+		<result column="STAT_CDE" property="statCde" jdbcType="VARCHAR" />
+		<result column="CRT_DEPT_CDE" property="crtDeptCde" jdbcType="VARCHAR" />
+		<result column="CRT_DTE" property="crtDte" jdbcType="DATE" />
+		<result column="JOIN_DEPT_CDE" property="joinDeptCde" jdbcType="VARCHAR" />
+		<result column="JOIN_DTE" property="joinDte" jdbcType="DATE" />
+		<result column="ACTV_DTE" property="actvDte" jdbcType="DATE" />
+		<result column="LAST_MOD_DTE" property="lastModDte" jdbcType="DATE" />
+		<result column="LAST_MOD_EMPL_NBR" property="lastModEmplNbr" jdbcType="VARCHAR" />
+
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="BCKUP_DTE" property="bckupDte" jdbcType="DATE" />
+		<result column="BCKUP_EMPL_NBR" property="bckupEmplNbr" jdbcType="VARCHAR" />
+		<result column="DML_CDE" property="dmlCde" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<sql id="Base_Column_List">
+		CUST_ID, TITLE, SEX, NAM_ENG, NAM_ZHT, NAM_ZHS, DOB,
+		ORIG_CTRY_CDE, REMARK1, REMARK2, MBR_CLASS, FR_CHANL,
+		ACCT_NAM, PWD,
+		PREF_LANG, STAT_CDE, CRT_DEPT_CDE, CRT_DTE, JOIN_DEPT_CDE, JOIN_DTE,
+		ACTV_DTE, LAST_MOD_DTE,
+		LAST_MOD_EMPL_NBR
+	</sql>
+
+	<select id="generateCustId" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		f_get_next_cust_id(#{origCtryCde,mode=IN,jdbcType=DECIMAL}) cust_id
+		from dual
+	</select>
+
+	<select id="getCustomerByPK" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from
+		VP_CUST
+		where
+		CUST_ID = #{custId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertCustomer" parameterType="com.css.crm.vo.CustomerVo">
+		insert into VP_CUST
+		(CUST_ID, TITLE, SEX, NAM_ENG, NAM_ZHT, NAM_ZHS, DOB, ORIG_CTRY_CDE,
+		REMARK1, REMARK2, MBR_CLASS, FR_CHANL, ACCT_NAM, PWD,
+		PREF_LANG,STAT_CDE, CRT_DEPT_CDE, CRT_DTE, JOIN_DEPT_CDE, JOIN_DTE,
+		ACTV_DTE, LAST_MOD_DTE, LAST_MOD_EMPL_NBR)
+		values (
+		#{custId,jdbcType=VARCHAR},
+		#{title,jdbcType=VARCHAR},
+		#{sex,jdbcType=VARCHAR},
+		trim(#{namEng,jdbcType=VARCHAR}),
+		trim(#{namZht,jdbcType=VARCHAR}),
+		trim(#{namZhs,jdbcType=VARCHAR}),
+		#{dob,jdbcType=DATE},
+		#{origCtryCde,jdbcType=DECIMAL},
+		trim(#{remark1,jdbcType=VARCHAR}),
+		trim(#{remark2,jdbcType=VARCHAR}),
+		#{mbrClass,jdbcType=VARCHAR},
+		#{frChanl,jdbcType=VARCHAR},
+		#{acctNam,jdbcType=VARCHAR},
+		#{pwd,jdbcType=VARCHAR},
+		#{prefLang,jdbcType=VARCHAR},
+		#{statCde,jdbcType=VARCHAR},
+		#{crtDeptCde,jdbcType=VARCHAR},
+		#{crtDte,jdbcType=DATE},
+		#{joinDeptCde,jdbcType=VARCHAR},
+		#{joinDte,jdbcType=DATE},
+		#{actvDte,jdbcType=DATE},
+		#{lastModDte,jdbcType=DATE},
+		#{lastModEmplNbr,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateCustomerByPK" parameterType="com.css.crm.vo.CustomerVo">
+		update
+		VP_CUST
+		set
+		TITLE = #{title,jdbcType=VARCHAR},
+		SEX = #{sex,jdbcType=VARCHAR},
+		NAM_ENG = trim(#{namEng,jdbcType=VARCHAR}),
+		NAM_ZHT =
+		trim(#{namZht,jdbcType=VARCHAR}),
+		NAM_ZHS = trim(#{namZhs,jdbcType=VARCHAR}),
+		DOB =
+		#{dob,jdbcType=DATE},
+		ORIG_CTRY_CDE = #{origCtryCde,jdbcType=DECIMAL},
+		REMARK1 = trim(#{remark1,jdbcType=VARCHAR}),
+		REMARK2 =
+		trim(#{remark2,jdbcType=VARCHAR}),
+		MBR_CLASS = #{mbrClass,jdbcType=VARCHAR},
+		FR_CHANL = #{frChanl,jdbcType=VARCHAR},
+		ACCT_NAM =
+		#{acctNam,jdbcType=VARCHAR},
+		PWD = #{pwd,jdbcType=VARCHAR},
+		PREF_LANG =
+		#{prefLang,jdbcType=VARCHAR},
+		STAT_CDE = #{statCde,jdbcType=VARCHAR},
+		CRT_DEPT_CDE = #{crtDeptCde,jdbcType=VARCHAR},
+		CRT_DTE =
+		#{crtDte,jdbcType=DATE},
+		JOIN_DEPT_CDE =
+		#{joinDeptCde,jdbcType=VARCHAR},
+		JOIN_DTE = #{joinDte,jdbcType=DATE},
+		ACTV_DTE = #{actvDte,jdbcType=DATE},
+		LAST_MOD_DTE =
+		#{lastModDte,jdbcType=DATE},
+		LAST_MOD_EMPL_NBR =
+		#{lastModEmplNbr,jdbcType=VARCHAR}
+		where
+		CUST_ID =
+		#{custId,jdbcType=VARCHAR}
+	</update>
+
+	<delete id="deleteCustomerByPK" parameterType="java.lang.String">
+		delete from
+		VP_CUST where CUST_ID = #{custId,jdbcType=VARCHAR}
+	</delete>
+	
+	<resultMap id="AuditTrailResultMap" type="com.css.crm.vo.AuditTrailVo">		
+		<result column="TYPE" property="modifyType" jdbcType="VARCHAR" />
+		<result column="BCKUP_DTE" property="bckupDte" jdbcType="DATE" />
+		<result column="BCKUP_EMPL_NBR" property="bckupEmplNbr" jdbcType="VARCHAR" />
+		<result column="DML_CDE" property="dmlCde" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="getCustomerAuditTrailList" parameterType="java.lang.String"
+		resultMap="AuditTrailResultMap">
+		SELECT TYPE, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE
+		FROM (
+			SELECT 'ATTR' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_ATTR_AT WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+			UNION ALL
+			SELECT 'ADDR' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_ADDR_AT WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+			UNION ALL
+			SELECT 'DISC' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_DISC_AT WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+			UNION ALL
+			SELECT 'EMAIL' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_EMAIL_AT WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+			UNION ALL
+			SELECT 'TEL' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_TEL_AT   WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+			UNION ALL
+			SELECT 'SERV_EVENT' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_SERV_EVENT_AT WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+			UNION ALL
+			SELECT 'CUST' TYPE, CUST_ID, BCKUP_DTE, BCKUP_EMPL_NBR, DML_CDE FROM VP_CUST_AT WHERE CUST_ID = #{custId,jdbcType=VARCHAR}
+		)
+		ORDER BY BCKUP_DTE DESC, TYPE ASC
+		
+	</select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerServiceEventAuditTrail">
+
+	<insert id="insertCustomerServiceEventAuditTrail" parameterType="com.css.crm.vo.CustomerServiceEventVo">
+		
+		insert into VP_CUST_SERV_EVENT_AT
+			(CUST_SERV_EVENT_ID,CUST_ID, EVENT_CDE, EVENT_DESC, EVENT_DTE, REMARK1, REMARK2, 
+			CRT_DTE, CRT_DEPT_CDE, CRT_EMPL_NBR, FLUP_DTE, FLUP_DEPT_CDE, FLUP_EMPL_NBR,
+			BCKUP_DTE,BCKUP_EMPL_NBR,DML_CDE)
+		values (
+			#{custServEventId,jdbcType=DECIMAL}, 
+			#{custId,jdbcType=VARCHAR}, 
+			#{eventCde,jdbcType=VARCHAR},
+			trim(#{eventDesc,jdbcType=VARCHAR}),
+			#{eventDte,jdbcType=DATE}, 
+			trim(#{remark1,jdbcType=VARCHAR}),
+			trim(#{remark2,jdbcType=VARCHAR}),
+			#{crtDte,jdbcType=DATE}, 
+			#{crtDeptCde,jdbcType=VARCHAR},
+			#{crtEmplNbr,jdbcType=VARCHAR},
+			#{flupDte,jdbcType=DATE},
+			#{flupDeptCde,jdbcType=VARCHAR},
+			#{flupEmplNbr,jdbcType=VARCHAR},
+			sysdate,
+		    #{bckupEmplNbr,jdbcType=VARCHAR},
+		    #{dmlCde,jdbcType=VARCHAR})
+	</insert>	
+
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerTelephone">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerTelephoneVo">
+		<id column="CUST_TEL_ID" property="custTelId" jdbcType="DECIMAL" />
+		<result column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<result column="TYPE_CDE" property="typeCde" jdbcType="VARCHAR" />
+		<result column="CTRY_CDE" property="ctryCde" jdbcType="DECIMAL" />
+		<result column="AREA_CDE" property="areaCde" jdbcType="DECIMAL" />
+		<result column="TEL_NBR" property="telNbr" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		CUST_TEL_ID, CUST_ID, TYPE_CDE, CTRY_CDE, AREA_CDE, TEL_NBR
+	</sql>
+
+	<select id="getCustomerTelephoneByPK" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_TEL
+		where
+			CUST_TEL_ID = #{custTelId,jdbcType=DECIMAL}
+	</select>
+
+	<select id="getCustomerTelephoneByCustId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_TEL
+		where
+			CUST_ID = #{custId,jdbcType=DECIMAL}
+		order by CUST_TEL_ID	
+	</select>
+
+	<insert id="insertCustomerTelephone" parameterType="com.css.crm.vo.CustomerTelephoneVo">
+		<selectKey resultType="Long" keyProperty="custTelId" order="BEFORE">
+			SELECT SQ_VP_CUST_TEL.NEXTVAL FROM DUAL
+		</selectKey>
+		insert into VP_CUST_TEL
+			(CUST_TEL_ID,CUST_ID, TYPE_CDE, CTRY_CDE, AREA_CDE, TEL_NBR)
+		values (
+			#{custTelId,jdbcType=DECIMAL},
+			#{custId,jdbcType=VARCHAR}, 
+			#{typeCde,jdbcType=VARCHAR},
+			trim(#{ctryCde,jdbcType=DECIMAL}),
+			trim(#{areaCde,jdbcType=DECIMAL}), 
+			trim(#{telNbr,jdbcType=VARCHAR}))
+	</insert>
+
+	<update id="updateCustomerTelephoneByPK" parameterType="com.css.crm.vo.CustomerTelephoneVo">
+		update
+			VP_CUST_TEL
+		set
+			CUST_ID = #{custId,jdbcType=VARCHAR},
+			TYPE_CDE = #{typeCde,jdbcType=VARCHAR},
+			CTRY_CDE = trim(#{ctryCde,jdbcType=DECIMAL}),
+			AREA_CDE = trim(#{areaCde,jdbcType=DECIMAL}),
+			TEL_NBR = trim(#{telNbr,jdbcType=VARCHAR})
+		where
+			CUST_TEL_ID = #{custTelId,jdbcType=DECIMAL}
+	</update>
+
+	<delete id="deleteCustomerTelephoneByPK" parameterType="java.lang.Long">
+		delete from
+			VP_CUST_TEL
+		where
+			CUST_TEL_ID = #{custTelId,jdbcType=DECIMAL}
+	</delete>
+
+	<delete id="deleteCustomerTelephoneByCustId" parameterType="java.lang.String">
+		delete from
+			VP_CUST_TEL
+		where
+			CUST_ID = #{custId,jdbcType=DECIMAL}
+	</delete>
+
+</mapper>

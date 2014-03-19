@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerRemarkQueue">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerRemarkQueueVo">
+		<result column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<result column="YEAR" property="year" jdbcType="DECIMAL" />
+		<result column="MOTH" property="moth" jdbcType="DECIMAL" />
+		<result column="QUEUE_STAT_CDE" property="queueStatCde" jdbcType="VARCHAR" />
+		<result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		CUST_ID, YEAR, MOTH, QUEUE_STAT_CDE, REMARK1
+	</sql>
+	
+	<select id="getCustomerRemarkQueueByCustId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_REMRK_QUEUE
+		where
+			CUST_ID = #{custId,jdbcType=DECIMAL}
+	</select>
+	
+	<insert id="insertCustomerRemarkQueue" parameterType="com.css.crm.vo.CustomerRemarkQueueVo">
+		insert into VP_CUST_REMRK_QUEUE
+			(CUST_ID, YEAR, MOTH, QUEUE_STAT_CDE, REMARK1)
+		values (
+			#{custId,jdbcType=VARCHAR}, 
+			#{year,jdbcType=DECIMAL}, 
+			#{moth,jdbcType=DECIMAL},
+			#{queueStatCde,jdbcType=VARCHAR}, 
+			trim(#{remark1,jdbcType=VARCHAR}))
+	</insert>
+	
+	<delete id="deleteCustomerRemarkQueueByCustId" parameterType="java.lang.String">
+		delete from
+			VP_CUST_REMRK_QUEUE
+		where
+			CUST_ID = #{custId,jdbcType=DECIMAL}
+	</delete>
+	
+</mapper>

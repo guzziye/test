@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerServiceEvent">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerServiceEventVo">
+		<id column="CUST_SERV_EVENT_ID" property="custServEventId" jdbcType="DECIMAL" />
+		<result column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<result column="EVENT_CDE" property="eventCde" jdbcType="VARCHAR" />
+		<result column="EVENT_DESC" property="eventDesc" jdbcType="VARCHAR" />
+		<result column="EVENT_DTE" property="eventDte" jdbcType="DATE" />
+		<result column="CRT_DTE" property="crtDte" jdbcType="DATE"/>
+		<result column="CRT_DEPT_CDE" property="crtDeptCde" jdbcType="VARCHAR"/>
+		<result column="CRT_EMPL_NBR" property="crtEmplNbr" jdbcType="VARCHAR"/>
+		<result column="FLUP_DTE" property="flupDte" jdbcType="DATE"/>
+		<result column="FLUP_DEPT_CDE" property="flupDeptCde" jdbcType="VARCHAR"/>
+		<result column="FLUP_EMPL_NBR" property="flupEmplNbr" jdbcType="VARCHAR"/>
+		<result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+		<result column="REMARK2" property="remark2" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		CUST_SERV_EVENT_ID, CUST_ID, EVENT_CDE, EVENT_DESC, EVENT_DTE, REMARK1, REMARK2,
+		CRT_DTE, CRT_DEPT_CDE, CRT_EMPL_NBR, FLUP_DTE, FLUP_DEPT_CDE, FLUP_EMPL_NBR
+	</sql>
+
+	<select id="getCustomerServiceEventByPK" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_SERV_EVENT
+		where
+			CUST_SERV_EVENT_ID = #{custServId,jdbcType=DECIMAL}
+	</select>
+
+	<select id="getCustomerServiceEventByCustId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_SERV_EVENT
+		where
+			CUST_ID = #{custId,jdbcType=VARCHAR}
+		order by CUST_SERV_EVENT_ID asc	
+	</select>
+
+	<insert id="insertCustomerServiceEvent" parameterType="com.css.crm.vo.CustomerServiceEventVo">
+		<selectKey resultType="long" keyProperty="custServEventId" order="BEFORE">
+			SELECT SQ_VP_CUST_SERV_EVENT.NEXTVAL FROM DUAL
+		</selectKey>
+		insert into VP_CUST_SERV_EVENT
+			(CUST_SERV_EVENT_ID,CUST_ID, EVENT_CDE, EVENT_DESC, EVENT_DTE, REMARK1, REMARK2,
+			CRT_DTE, CRT_DEPT_CDE, CRT_EMPL_NBR, FLUP_DTE, FLUP_DEPT_CDE, FLUP_EMPL_NBR)
+		values (
+			#{custServEventId,jdbcType=DECIMAL}, 
+			#{custId,jdbcType=VARCHAR}, 
+			#{eventCde,jdbcType=VARCHAR},
+			trim(#{eventDesc,jdbcType=VARCHAR}),
+			#{eventDte,jdbcType=DATE}, 
+			trim(#{remark1,jdbcType=VARCHAR}),
+			trim(#{remark2,jdbcType=VARCHAR}),
+			#{crtDte,jdbcType=DATE}, 
+			#{crtDeptCde,jdbcType=VARCHAR},
+			#{crtEmplNbr,jdbcType=VARCHAR},
+			#{flupDte,jdbcType=DATE},
+			#{flupDeptCde,jdbcType=VARCHAR},
+			#{flupEmplNbr,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateCustomerServiceEventByPK" parameterType="com.css.crm.vo.CustomerServiceEventVo">
+		update
+			VP_CUST_SERV_EVENT
+		set
+			CUST_ID = #{custId,jdbcType=VARCHAR},
+			EVENT_CDE = #{eventCde,jdbcType=VARCHAR},
+			EVENT_DESC = trim(#{eventDesc,jdbcType=VARCHAR}),
+			EVENT_DTE = #{eventDte,jdbcType=DATE},
+			REMARK1 = trim(#{remark1,jdbcType=VARCHAR}),
+			REMARK2 = trim(#{remark2,jdbcType=VARCHAR}),
+			CRT_DTE = #{crtDte,jdbcType=DATE}, 
+			CRT_DEPT_CDE= #{crtDeptCde,jdbcType=VARCHAR},
+			CRT_EMPL_NBR = #{crtEmplNbr,jdbcType=VARCHAR},
+			FLUP_DTE = #{flupDte,jdbcType=DATE},
+			FLUP_DEPT_CDE = #{flupDeptCde,jdbcType=VARCHAR},
+			FLUP_EMPL_NBR = #{flupEmplNbr,jdbcType=VARCHAR}
+			
+			where CUST_SERV_EVENT_ID = #{custServEventId,jdbcType=DECIMAL}
+	</update>
+
+	<delete id="deleteCustomerServiceEventByPK" parameterType="java.lang.Long">
+		delete from
+			VP_CUST_SERV_EVENT
+		where
+			CUST_SERV_EVENT_ID = #{custServEventId,jdbcType=DECIMAL}
+	</delete>
+
+	<delete id="deleteCustomerServiceEventByCustId" parameterType="java.lang.String">
+		delete from
+			VP_CUST_SERV_EVENT
+		where
+			CUST_ID = #{custId,jdbcType=VARCHAR}
+	</delete>
+
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerAttribute">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerAttributeVo">
+		<id column="CUST_ATTR_ID" property="custAttrId" jdbcType="DECIMAL" />
+		<id column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<id column="ATTR_CDE" property="attrCde" jdbcType="VARCHAR" />
+		<result column="ATTR_VAL" property="attrVal" jdbcType="VARCHAR" />
+		<result column="REMARK1" property="remark1" jdbcType="VARCHAR" />
+		<result column="REMARK2" property="remark2" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		CUST_ATTR_ID, CUST_ID, ATTR_CDE, ATTR_VAL, REMARK1, REMARK2
+	</sql>
+
+	<select id="getCustomerAttributeByPK" resultMap="BaseResultMap" parameterType="com.css.crm.vo.CustomerAttributeVo">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_ATTR
+		where
+			CUST_ATTR_ID = #{custAttrId,jdbcType=DECIMAL}
+	</select>
+
+	<select id="getCustomerAttributeByCustId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_ATTR
+		where
+			CUST_ID = #{custId,jdbcType=VARCHAR}
+		order by cust_attr_id asc	
+	</select>
+
+	<insert id="insertCustomerAttribute" parameterType="com.css.crm.vo.CustomerAttributeVo">
+		<selectKey resultType="long" keyProperty="custAttrId" order="BEFORE">
+			SELECT
+		      SQ_VP_CUST_ATTR.NEXTVAL
+		    FROM
+		      DUAL
+		</selectKey>
+		insert into VP_CUST_ATTR
+			(CUST_ATTR_ID, CUST_ID, ATTR_CDE, ATTR_VAL, REMARK1, REMARK2)
+		values (
+		    #{custAttrId, jdbcType=DECIMAL},
+			#{custId,jdbcType=VARCHAR},
+			trim(#{attrCde,jdbcType=VARCHAR}),
+			trim(#{attrVal,jdbcType=VARCHAR}),
+			trim(#{remark1,jdbcType=VARCHAR}),
+			trim(#{remark2,jdbcType=VARCHAR}))
+	</insert>
+
+	<update id="updateCustomerAttributeByPK" parameterType="com.css.crm.vo.CustomerAttributeVo">
+		update 
+			VP_CUST_ATTR
+		set 
+		    ATTR_CDE = trim(#{attrCde,jdbcType=VARCHAR}),
+			ATTR_VAL = trim(#{attrVal,jdbcType=VARCHAR}),
+			REMARK1 = trim(#{remark1,jdbcType=VARCHAR}),
+			REMARK2 = trim(#{remark2,jdbcType=VARCHAR})
+		where
+			CUST_ATTR_ID = #{custAttrId,jdbcType=DECIMAL}
+	</update>
+
+	<delete id="deleteCustomerAttributeByPK" parameterType="java.lang.Long">
+		delete from
+			VP_CUST_ATTR
+		where
+			CUST_ATTR_ID = #{custAttrId,jdbcType=DECIMAL}
+	</delete>
+
+	<delete id="deleteCustomerAttributeByCustId" parameterType="java.lang.String">
+		delete from
+			VP_CUST_ATTR
+		where
+			CUST_ID = #{custId,jdbcType=VARCHAR}
+	</delete>
+
+</mapper>

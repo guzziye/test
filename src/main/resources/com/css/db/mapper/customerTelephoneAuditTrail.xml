@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerTelephoneAuditTrail">
+
+	
+	<insert id="insertCustomerTelephoneAuditTrail" parameterType="com.css.crm.vo.CustomerTelephoneVo">
+		insert into VP_CUST_TEL_AT
+			(CUST_TEL_ID,CUST_ID, TYPE_CDE, CTRY_CDE, AREA_CDE, TEL_NBR, BCKUP_DTE,BCKUP_EMPL_NBR,DML_CDE)
+		values (
+			#{custTelId,jdbcType=DECIMAL},
+			#{custId,jdbcType=VARCHAR}, 
+			#{typeCde,jdbcType=VARCHAR},
+			trim(#{ctryCde,jdbcType=DECIMAL}),
+			trim(#{areaCde,jdbcType=DECIMAL}), 
+			trim(#{telNbr,jdbcType=VARCHAR}),
+			sysdate,
+		    #{bckupEmplNbr,jdbcType=VARCHAR},
+		    #{dmlCde,jdbcType=VARCHAR})
+	</insert>
+	
+
+</mapper>

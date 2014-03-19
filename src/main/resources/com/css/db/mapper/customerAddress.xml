@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="customerAddress">
+
+	<resultMap id="BaseResultMap" type="com.css.crm.vo.CustomerAddressVo">
+		<id column="CUST_ADDR_ID" property="custAddrId" jdbcType="DECIMAL" />
+		<result column="CUST_ID" property="custId" jdbcType="VARCHAR" />
+		<result column="TYPE_CDE" property="typeCde" jdbcType="VARCHAR" />
+		<result column="PLACE_ID" property="placeId" jdbcType="DECIMAL" />
+		<result column="DSTRT" property="dstrt" jdbcType="VARCHAR" />
+		<result column="ADDR1" property="addr1" jdbcType="VARCHAR" />
+		<result column="ADDR2" property="addr2" jdbcType="VARCHAR" />
+		<result column="ADDR3" property="addr3" jdbcType="VARCHAR" />
+		<result column="ZIP" property="zip" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		CUST_ADDR_ID, CUST_ID, TYPE_CDE, PLACE_ID, DSTRT, ADDR1, ADDR2, ADDR3,ZIP
+	</sql>
+	
+	<select id="getCustomerAddressByPK" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_ADDR
+		where
+			CUST_ADDR_ID = #{custAddrId,jdbcType=DECIMAL}
+	</select>
+	
+	<select id="getCustomerAddressByCustId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+			<include refid="Base_Column_List" />
+		from
+			VP_CUST_ADDR
+		where
+			CUST_ID = #{custId,jdbcType=DECIMAL}
+			
+			order by CUST_ADDR_ID
+	</select>
+	
+	<insert id="insertCustomerAddress" parameterType="com.css.crm.vo.CustomerAddressVo">
+		<selectKey resultType="long" keyProperty="custAddrId" order="BEFORE">
+		SELECT
+			SQ_VP_CUST_ADDR.NEXTVAL
+		FROM
+			DUAL
+		</selectKey>
+		insert into VP_CUST_ADDR
+			(CUST_ADDR_ID, CUST_ID, TYPE_CDE, PLACE_ID, DSTRT, ADDR1, ADDR2, ADDR3, ZIP)
+		values (
+			#{custAddrId, jdbcType=DECIMAL}, 
+			#{custId,jdbcType=VARCHAR}, 
+			#{typeCde,jdbcType=VARCHAR},
+			#{placeId,jdbcType=DECIMAL},
+			trim(#{dstrt,jdbcType=VARCHAR}),
+			trim(#{addr1,jdbcType=VARCHAR}),
+			trim(#{addr2,jdbcType=VARCHAR}),
+			trim(#{addr3,jdbcType=VARCHAR}),
+			trim(#{zip,jdbcType=VARCHAR}))
+	</insert>
+
+	<update id="updateCustomerAddressByPK" parameterType="com.css.crm.vo.CustomerAddressVo">
+		update
+			VP_CUST_ADDR
+		set
+			CUST_ID = #{custId,jdbcType=VARCHAR},
+			TYPE_CDE = #{typeCde,jdbcType=VARCHAR},
+			PLACE_ID = #{placeId,jdbcType=DECIMAL},
+			DSTRT = trim(#{dstrt,jdbcType=VARCHAR}),
+			ADDR1 = trim(#{addr1,jdbcType=VARCHAR}),
+			ADDR2 = trim(#{addr2,jdbcType=VARCHAR}),
+			ADDR3 = trim(#{addr3,jdbcType=VARCHAR}),
+			ZIP = trim(#{zip,jdbcType=VARCHAR})
+		where
+			CUST_ADDR_ID = #{custAddrId,jdbcType=DECIMAL}
+	</update>
+	
+	<delete id="deleteCustomerAddressByPK" parameterType="java.lang.Long">
+		delete from
+			VP_CUST_ADDR
+		where
+			CUST_ADDR_ID = #{custAddrId,jdbcType=DECIMAL}
+	</delete>
+	
+	<delete id="deleteCustomerAddressByCustId" parameterType="java.lang.String">
+		delete from
+			VP_CUST_ADDR
+		where
+			CUST_ID = #{custId,jdbcType=DECIMAL}
+	</delete>
+
+</mapper>

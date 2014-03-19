@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="preciousMetalPrice">
+
+
+	<resultMap type="com.css.eshop.vo.PreciousMetalPriceHistVo"
+		id="getPreciousMetalPriceHistMap">
+		<result property="metalId" column="precious_metal_id" />
+		<result property="metalType" column="precious_metal_type"
+			jdbcType="VARCHAR" />
+		<result property="sellInd" column="buy_sell_ind" jdbcType="VARCHAR" />
+		<result property="productPriceCalInd" column="product_price_calc_ind"
+			jdbcType="VARCHAR" />
+		<result property="uom" column="uom" jdbcType="VARCHAR" />
+		<result property="currencyCode" column="currency_code"
+			jdbcType="VARCHAR" />
+		<result property="unitRate" column="unit_rate" jdbcType="VARCHAR" />
+		<result property="effDate" column="eff_date" jdbcType="DATE" />
+	</resultMap>
+
+	<select id="getPreciousMetalPriceHist" resultMap="getPreciousMetalPriceHistMap"
+		parameterType="com.css.eshop.vo.PreciousMetalPriceHistVo">
+		<![CDATA[
+		 select prm.precious_metal_id,prm.precious_metal_type,prm.buy_sell_ind,prm.product_price_calc_ind ,
+prm.uom,prmh.currency_code, prmh.unit_rate,prmh.eff_date
+  from precious_metal prm,
+       (SELECT lastEdu.*
+          FROM (SELECT edu.*,
+                       ROW_NUMBER() OVER(partition by precious_metal_id ORDER BY eff_date DESC) ROWNO
+                  FROM precious_metal_price_hist edu) lastEdu
+         WHERE rowNo = 1
+         AND  lastEdu.currency_code = #{currencyCode,jdbcType=VARCHAR}) prmh
+
+ where prm.precious_metal_id = prmh.precious_metal_id(+)
+      
+   and prm.product_price_calc_ind = #{productPriceCalInd,jdbcType=DECIMAL}  
+	]]>
+	</select>
+
+	<update id="updatePreciousMetalPriceHist" parameterType="com.css.eshop.vo.PreciousMetalPriceHistVo">
+		update
+		precious_metal_price_hist
+		set unit_rate =#{newUnitRate,jdbcType=VARCHAR},
+		eff_date =#{newEffDate,jdbcType=TIMESTAMP}
+		where currency_code =#{currencyCode,jdbcType=VARCHAR}
+		and  to_char(eff_date,'YYYY-MM-dd hh:mi')=  to_char(#{effDate,jdbcType=TIMESTAMP},'YYYY-MM-dd hh:mi') 
+		and precious_metal_id = #{metalId,jdbcType=DECIMAL}
+		
+	</update>
+
+
+	<delete id="deletePreciousMetalPriceHist" parameterType="com.css.eshop.vo.PreciousMetalPriceHistVo">
+
+		delete
+		from precious_metal_price_hist
+		where currency_code = #{currencyCode,jdbcType=VARCHAR}
+		and  to_char(eff_date,'YYYY-MM-dd hh:mi' )=  to_char(#{effDate,jdbcType=TIMESTAMP},'YYYY-MM-dd hh:mi' ) 
+		and precious_metal_id = #{metalId,jdbcType=DECIMAL}
+
+	</delete>
+
+
+	<insert id="insertPreciousMetalPriceHist" parameterType="com.css.eshop.vo.PreciousMetalPriceHistVo">
+
+		insert into precious_metal_price_hist
+		(precious_metal_id,
+		currency_code, unit_rate, eff_date)
+		values
+		(#{metalId,jdbcType=DECIMAL},
+		#{currencyCode,jdbcType=VARCHAR},
+		#{unitRate,jdbcType=VARCHAR},
+		#{effDate,jdbcType=TIMESTAMP})
+
+
+	</insert>
+
+
+
+
+
+
+</mapper>
